@@ -12,12 +12,13 @@
 
 import os
 import subprocess
-import sign_tool
 import tarfile
 import shutil
 import time
 
-CUR_PATH = os.getcwd()
+# 自定义模块
+import sign_tool
+import config
 
 def sign_opk(var_list):
     """ 插件签名实现函数
@@ -50,7 +51,7 @@ def sign_opk(var_list):
         return [-2, msg]
 
     try:
-        target_path = os.path.join(CUR_PATH, "_tmp_sign_tool")
+        target_path = os.path.join(config.get_tmp_path(), "_tmp_sign_tool")
         shutil.rmtree(target_path, ignore_errors=True)
         os.mkdir(target_path)
 

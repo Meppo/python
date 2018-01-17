@@ -17,9 +17,12 @@ import tkinter as tk
 from PIL import Image
 import os
 
+# 自定义模块
+import config
+
 # 全局变量
-cache_path = os.path.join(os.getcwd(), ".cache")
-default_bg_file = os.path.join(os.getcwd(), "image", "my_bg.GIF")
+cache_path = os.path.join(config.get_tmp_path(), ".cache")
+default_bg_file = os.path.join(config.INSTALL_PATH, "image", "my_bg.GIF")
 
 def get_screen_size(window):
     """获取屏蔽的宽度，高度"""
@@ -55,6 +58,7 @@ def center_window(root, width, height):
 def get_resize_photo(size):
     """根据指定的宽和高得到相应缩放后的背景图片."""
 
+    os.makedirs(cache_path, exist_ok=True)
     tmp_bg_photo_file = cache_path + "/" + "bg_photo_resize.png"
     default_bg_photo = Image.open(default_bg_file)
     bg_photo_resize = default_bg_photo.resize(size, Image.ANTIALIAS)

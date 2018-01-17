@@ -17,11 +17,14 @@ import os
 import copy
 import shutil
 
-DATA_FILE = os.path.join(os.getcwd(), 'DATA', "SIGN_KEY.DATA")
+# 自定义模块
+import config
+
+DATA_FILE = os.path.join(config.INSTALL_PATH, 'DATA', "SIGN_KEY.DATA")
 SEPERATE = "|"
 ITEM_MEMBER_NUM=3
 OLD_KEY_PATH = "/opt/work/N360/N360_Power4S/user/nossdk/sign_tools_all/KEY"
-NEW_KEY_PATH = os.path.join(os.getcwd(), 'KEY')
+NEW_KEY_PATH = os.path.join(config.INSTALL_PATH, 'KEY')
 
 all_data = []
 

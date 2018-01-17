@@ -18,10 +18,13 @@ import copy
 import shutil
 import time
 
-DATA_FILE = os.path.join(os.getcwd(), 'DATA', "SIGN_TOOL.DATA")
+# 自定义模块
+import config
+
+DATA_FILE = os.path.join(config.INSTALL_PATH, 'DATA', "SIGN_TOOL.DATA")
 SEPERATE = "|"
 ITEM_MEMBER_NUM=5
-NEW_TOOL_PATH = os.path.join(os.getcwd(), 'TOOL')
+NEW_TOOL_PATH = os.path.join(config.INSTALL_PATH, 'TOOL')
 
 all_data = []
 

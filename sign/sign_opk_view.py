@@ -19,12 +19,15 @@
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import filedialog
-import main_view as v_main
-import sign_tool
-import sign_opk
 import os
 import shutil
 import datetime
+
+# 自定义模块
+import main_view as v_main
+import sign_tool
+import sign_opk
+import config
 
 sign_win_txt = "插件签名工具"
 sign_exit_txt = "退出"
@@ -403,9 +406,14 @@ class MySignOpkWin(tk.Tk):
     def select_opk(self):
         """ "选择插件" 按钮执行函数 """
 
-        self.opk_path = filedialog.askopenfilename(master=self)
+        self.opk_path = filedialog.askopenfilename(master=self,
+                                                   initialdir=config.get_tmp_config("global", "opk_select_path"))
         print("select opk path: %s" % self.opk_path)
         self.opk_file.set(os.path.basename(self.opk_path))
+
+        # 保存用户 常用的选择插件路径
+        if self.opk_path:
+            config.save_tmp_config("global", "opk_select_path", os.path.dirname(self.opk_path))
 
     def flush_list_b(self):
         """ 刷新 "签名工具列表" """
@@ -458,9 +466,13 @@ class MySignOpkWin(tk.Tk):
         if not self.opk_path:
             return False
 
-        t_path = filedialog.asksaveasfilename(master=self, title="签名后插件另存为", initialfile=os.path.basename(self.opk_path))
+        t_path = filedialog.asksaveasfilename(master=self, title="签名后插件另存为", 
+                                                initialfile=os.path.basename(self.opk_path),
+                                                initialdir=config.get_tmp_config("global", "opk_save_path"))
         if not t_path:
             return False
+        # 保存用户 常用的另存为路径
+        config.save_tmp_config("global", "opk_save_path", os.path.dirname(t_path))
 
         print ("copy %s => %s" % (self.opk_path, t_path))
         try:

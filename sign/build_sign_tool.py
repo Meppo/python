@@ -11,10 +11,15 @@
 
 import os
 import subprocess
-import sign_key
 import time
+import shutil
+
+# 自定义模块
+import sign_key
+import config
 
 BUILD_SH = "/opt/work/N360/N360_Power4S/user/nossdk/sign_tools_all/sign_tool/build_sign_tool.sh"
+BUILD_TOOL_PATH = os.path.join(config.INSTALL_PATH, 'BUILD_TOOL')
 
 def build_sign_tool(var_list):
     """ 生成插件工具实现函数
@@ -61,7 +66,21 @@ def build_sign_tool(var_list):
             target_name = output[start+3:end+7]
             print("last sign tool name: %s" % target_name)
 
-    return [0, target_name, output]
+    # 将生成出来的签名工具移到备份目录下
+    if target_name:
+        if not os.path.exists(BUILD_TOOL_PATH):
+            os.makedirs(BUILD_TOOL_PATH, exist_ok=True)
+
+        now_path = os.path.join(os.getcwd(), target_name)
+        t_path = os.path.join(BUILD_TOOL_PATH, target_name)
+        try:
+            print ("move %s => %s" % (now_path, t_path))
+            shutil.move(now_path, t_path)
+        except:
+            output = output + "\nmove %s => %s failed!\n" % (now_path, t_path)
+            t_path = ""
+
+    return [0, t_path, output]
 
 
 def test():

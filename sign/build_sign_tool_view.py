@@ -17,13 +17,16 @@
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import filedialog
+import os
+import shutil
+import datetime
+
+# 自定义模块
 import main_view as v_main
 import build_sign_tool as bst
 import sign_opk_view as v_so
 import sign_key
-import os
-import shutil
-import datetime
+import config
 
 bst_win_txt = "生成签名工具"
 bst_func_menu_txt = "功能"
@@ -189,6 +192,7 @@ class MyBuildSignToolWin(tk.Tk):
         self.update()
 
         self.gen_id = ""
+        self.target_path = ""
 
         # 设置窗口居中
         v_main.just_center_window(self)
@@ -401,22 +405,25 @@ class MyBuildSignToolWin(tk.Tk):
     def save_sign_tool(self):
         """ "另存为" 按钮执行函数 """
 
-        if not self.tar_name_e.get():
+        if not self.target_path:
             return False
 
-        t_path = filedialog.asksaveasfilename(master=self, title="签名工具另存为", initialfile=self.tar_name_e.get())
+        t_path = filedialog.asksaveasfilename(master=self, title="签名工具另存为",\
+                                                initialfile=self.tar_name_e.get(), 
+                                                initialdir=config.get_tmp_config("global", "tool_save_path"))
         if not t_path:
             return False
+        # 保存用户 常用的另存为路径
+        config.save_tmp_config("global", "tool_save_path", os.path.dirname(t_path))
 
-        now_path = os.path.join(os.getcwd(), self.tar_name_e.get())
-        print ("copy %s => %s" % (now_path, t_path))
+        print ("copy %s => %s" % (self.target_path, t_path))
         try:
             msg = "保存地址:%s" % t_path
-            res = shutil.copy(now_path, t_path)
+            res = shutil.copy(self.target_path, t_path)
             messagebox.showinfo(
                 "保存成功", msg, parent=self)
         except:
-            msg = "从%s拷贝到%s失败." % (now_path, t_path)
+            msg = "从%s拷贝到%s失败." % (self.target_path, t_path)
             messagebox.showerror(
                 "保存失败", msg, parent=self)
 
@@ -475,7 +482,7 @@ class MyBuildSignToolWin(tk.Tk):
 
         d = v_so.MyAddNewToolialog(self, "添加签名工具",\
                 m=self.model_e.get(), c=self.app_center_e.get(), s=self.app_sign_e.get(),\
-                t=expire_time, p=os.path.join(os.getcwd(), self.tar_name_e.get()))
+                t=expire_time, p=self.target_path)
 
     def chosen(self, e):
         """ "秘钥(插件/插件中心)列表" 鼠标单击动作函数 """
@@ -555,7 +562,8 @@ class MyBuildSignToolWin(tk.Tk):
         self.detail.delete(1.0, tk.END)
         if state == 0:
             if target:
-                self.tar_name.set(target)
+                self.target_path = target
+                self.tar_name.set(os.path.basename(target))
             self.detail.insert(tk.END, output)
         else:
             self.detail.insert(tk.END, "工具信息:\n" + msg + "\n")
@@ -564,7 +572,7 @@ class MyBuildSignToolWin(tk.Tk):
         self.detail.config(state=tk.DISABLED)
 
         if state == 0:
-            messagebox.showinfo("生成工具成功", msg + "签名工具: %s\n"%target, parent=self)
+            messagebox.showinfo("生成工具成功", msg + "签名工具: %s\n"%os.path.basename(target), parent=self)
         else:
             messagebox.showerror("生成工具失败", msg, parent=self)
 
