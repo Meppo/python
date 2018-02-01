@@ -73,16 +73,23 @@ def sign_opk(var_list):
         return [-3, msg]
 
     # 执行脚本进行签名
-    cmd = "cd %s && chmod +x make_sign.sh && ./make_sign.sh %s" % (script_dir, opk_path)
+    cmd = ['chmod', '+x', 'make_sign.sh']
+    p = subprocess.Popen(cmd, cwd=script_dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out, err = p.communicate()
     output = "执行时间:\n" + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + "\n\n"
-    output = output + "执行命令:\n" + cmd + "\n\n"
-    process = os.popen(cmd) # return file
-    while True:
-        tmp = process.read()
-        if not tmp:
-            break
-        output = output + "执行结果:\n" + tmp + "\n\n"
-    process.close()
+    output = output + "执行命令:\n"
+    output = output + str(cmd) + "\n\n"  + "输出:\n" \
+            + bytes.decode(out) + "\n" \
+            + "警告:\n" + bytes.decode(err) + "\n\n"
+
+    cmd = ['./make_sign.sh', opk_path]
+    p = subprocess.Popen(cmd, cwd=script_dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out, err = p.communicate()
+    output = output + "执行时间:\n" + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + "\n\n"
+    output = output + "执行命令:\n"
+    output = output + str(cmd) + "\n\n" + "输出:\n" \
+            + bytes.decode(out) + "\n" \
+            + "警告:\n" + bytes.decode(err) + "\n\n"
 
     shutil.rmtree(target_path) 
 

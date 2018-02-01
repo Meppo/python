@@ -42,19 +42,14 @@ def build_sign_tool(var_list):
         print("can't find the key for %s %s" % (model, app_center))
         return [-2, "", "can't find the key for %s %s" % (model, app_center)]
 
-    cmd = "%s %s %s %s %s %s %s" % (BUILD_SH, key_path, model, app_sign, app_center, author, sign_author)
+    cmd = [BUILD_SH, key_path, model, app_sign, app_center, author, sign_author]
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out, err = p.communicate()
     output = "执行时间:\n" + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + "\n\n"
-    output = output + "执行命令:\n" + cmd + "\n\n"
-    process = os.popen(cmd) # return file
-    while True:
-        tmp = process.read()
-        if not tmp:
-            break
-        output = output + "执行结果:\n" + tmp + "\n\n"
-    process.close()
-
-    if not output:
-        return [0, "", "no output.."]
+    output = output + "执行命令:\n"
+    output = output + str(cmd) + "\n\n"  + "输出:\n" \
+            + bytes.decode(out) + "\n" \
+            + "警告:\n" + bytes.decode(err) + "\n\n"
 
     # find target name from output
     #  ...find "=> [app_sign]_[model]_[app_center]_[time].tar.gz"
